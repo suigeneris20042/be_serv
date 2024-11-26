@@ -1,0 +1,59 @@
+COMMAND    PID     USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+ControlCe  392 macfranz    8u  IPv4 0x922474f1cd2fac8d      0t0  TCP *:afs3-fileserver (LISTEN)
+ControlCe  392 macfranz    9u  IPv6 0xc01b2ebb852a62b4      0t0  TCP *:afs3-fileserver (LISTEN)
+ControlCe  392 macfranz   10u  IPv4 0x752bbcf83c53fbf7      0t0  TCP *:commplex-main (LISTEN)
+ControlCe  392 macfranz   11u  IPv6 0xd28a49ff7d5d97d1      0t0  TCP *:commplex-main (LISTEN)
+ControlCe  392 macfranz   16u  IPv4 0x3260ef5535fd39cd      0t0  UDP *:*
+rapportd   414 macfranz    8u  IPv4 0x306824ea2e735c9d      0t0  UDP *:*
+rapportd   414 macfranz    9u  IPv4 0x51c1d605a88381f2      0t0  TCP *:49182 (LISTEN)
+rapportd   414 macfranz   10u  IPv6 0x31ad4bc317286f5a      0t0  TCP *:49182 (LISTEN)
+rapportd   414 macfranz   11u  IPv4 0xee75b38d762e6ee1      0t0  UDP *:*
+rapportd   414 macfranz   12u  IPv4 0xbf4bf27f117f1ca8      0t0  UDP *:*
+rapportd   414 macfranz   16u  IPv6 0xcbc225a979dbece1      0t0  TCP macbook-pro-de-francis.local:49182->[fe80:6::47c:aef9:a773:7e37]:50845 (ESTABLISHED)
+rapportd   414 macfranz   17u  IPv6 0x8194910969c4a049      0t0  UDP *:xserveraid
+rapportd   414 macfranz   18u  IPv4 0xb9fc0de75e76bed0      0t0  UDP *:*
+WiFiAgent  424 macfranz    3u  IPv4 0x873c4c09323ea541      0t0  UDP *:*
+identitys  432 macfranz   15u  IPv4 0xb821d7c00bc8ccd1      0t0  UDP *:*
+identitys  432 macfranz   20u  IPv4 0x1e06c2ebc68a1e9f      0t0  UDP *:*
+identitys  432 macfranz   52u  IPv6 0x33e4901842160fe0      0t0  TCP macbook-pro-de-francis.local:1024->[fe80:12::bcb7:2c3e:b4b8:3161]:1024 (ESTABLISHED)
+identitys  432 macfranz   56u  IPv6 0xd1052c034ad2c47c      0t0  TCP macbook-pro-de-francis.local:blackjack->[fe80:12::bcb7:2c3e:b4b8:3161]:exosee (ESTABLISHED)
+identitys  432 macfranz   57u  IPv6 0xd1052c034ad2c47c      0t0  TCP macbook-pro-de-francis.local:blackjack->[fe80:12::bcb7:2c3e:b4b8:3161]:exosee (ESTABLISHED)
+sharingd   438 macfranz    4u  IPv4 0x4bb42c53e4d8bffa      0t0  UDP *:*
+sharingd   438 macfranz    5u  IPv4 0x6f37919de5478248      0t0  UDP *:*
+sharingd   438 macfranz    6u  IPv4  0x65fc89eacef4613      0t0  UDP *:*
+sharingd   438 macfranz    8u  IPv4 0xdcca11bc7d84bea5      0t0  UDP *:*
+sharingd   438 macfranz   10u  IPv4 0x803bcda75df6037e      0t0  UDP *:*
+sharingd   438 macfranz   13u  IPv4 0xeca9dcea392a37a3      0t0  UDP *:*
+sharingd   438 macfranz   14u  IPv4 0xd7b2178fe188b918      0t0  UDP *:*
+sharingd   438 macfranz   15u  IPv6  0x86fda5b8b4b3041      0t0  UDP *:62990
+chronod    453 macfranz    8u  IPv6 0xc05451c198497b2a      0t0  UDP *:62149
+Code\x20H  651 macfranz   20u  IPv4 0xcddb841235bb49fb      0t0  TCP 192.168.0.24:49484->20.50.80.214:https (ESTABLISHED)
+MongoDB    667 macfranz   23u  IPv4 0x103800c6a8b93990      0t0  TCP 192.168.0.24:49230->ec2-3-93-83-52.compute-1.amazonaws.com:https (ESTABLISHED)
+MongoDB    667 macfranz   25u  IPv4 0x52d55ca8e000a221      0t0  TCP 192.168.0.24:49238->ec2-34-237-73-95.compute-1.amazonaws.com:https (ESTABLISHED)
+MongoDB    717 macfranz   24u  IPv4 0x2de7638b49067c6f      0t0  TCP localhost:49485->localhost:27017 (ESTABLISHED)
+MongoDB    717 macfranz   25u  IPv4 0x9f36defaab557958      0t0  TCP localhost:49486->localhost:27017 (ESTABLISHED)
+MongoDB    717 macfranz   27u  IPv4 0x3ebca2a0f5862cda      0t0  TCP localhost:49487->localhost:27017 (ESTABLISHED)
+MongoDB    717 macfranz   28u  IPv4 0x1ec52761a146e26c      0t0  TCP localhost:49488->localhost:27017 (ESTABLISHED)
+MongoDB    717 macfranz   29u  IPv4 0x6347f97661b5dd78      0t0  TCP localhost:49489->localhost:27017 (ESTABLISHED)
+MongoDB    717 macfranz   30u  IPv4 0x42496515f0189a08      0t0  TCP localhost:49490->localhost:27017 (ESTABLISHED)
+MongoDB    717 macfranz   31u  IPv4 0x2e7ccaa9302bb637      0t0  TCP localhost:49491->localhost:27017 (ESTABLISHED)
+MongoDB    717 macfranz   32u  IPv4 0xc0874d64a5935ad3      0t0  TCP localhost:49493->localhost:27017 (ESTABLISHED)
+mongod     993 macfranz    9u  IPv4 0xbe89fa8fe77d0bb1      0t0  TCP localhost:27017 (LISTEN)
+mongod     993 macfranz   10u  IPv6 0xb95da1cf5fd6523a      0t0  TCP localhost:27017 (LISTEN)
+mongod     993 macfranz   28u  IPv4 0xcb0e77e288f4a5b6      0t0  TCP localhost:27017->localhost:49485 (ESTABLISHED)
+mongod     993 macfranz   29u  IPv4 0xac334e26f7ff9e79      0t0  TCP localhost:27017->localhost:49486 (ESTABLISHED)
+mongod     993 macfranz   30u  IPv4 0x41eb2a73f070a2b9      0t0  TCP localhost:27017->localhost:49487 (ESTABLISHED)
+mongod     993 macfranz   31u  IPv4 0xc73f1cd96a47e808      0t0  TCP localhost:27017->localhost:49488 (ESTABLISHED)
+mongod     993 macfranz   32u  IPv4 0x939eed7abab23bad      0t0  TCP localhost:27017->localhost:49489 (ESTABLISHED)
+mongod     993 macfranz   33u  IPv4 0xbc619dffb362473f      0t0  TCP localhost:27017->localhost:49490 (ESTABLISHED)
+mongod     993 macfranz   34u  IPv4 0x8c1a89fb4066c79a      0t0  TCP localhost:27017->localhost:49491 (ESTABLISHED)
+mongod     993 macfranz   44u  IPv4 0xc4d95123aa7ebb5f      0t0  TCP localhost:27017->localhost:49493 (ESTABLISHED)
+corespeec  994 macfranz    3u  IPv6 0x541fa816eef8ae82      0t0  TCP [fe80:4::aede:48ff:fe00:1122]:49254->[fe80:4::aede:48ff:fe33:4455]:49378 (ESTABLISHED)
+firefox   1179 macfranz   26u  IPv6 0xa3f965504876c937      0t0  TCP [2800:200:f540:1c7f:215b:dde2:fc66:28ed]:49496->[2800:3f0:4003:c08::12]:https (ESTABLISHED)
+firefox   1179 macfranz   37u  IPv6 0x2719caac96ffa880      0t0  TCP [2800:200:f540:1c7f:215b:dde2:fc66:28ed]:49465->[2800:3f0:4003:c03::8a]:https (ESTABLISHED)
+firefox   1179 macfranz   55u  IPv6 0xad3cfc6d0c8b5ecd      0t0  TCP [2800:200:f540:1c7f:215b:dde2:fc66:28ed]:49472->[2800:3f0:4003:c03::5e]:https (ESTABLISHED)
+firefox   1179 macfranz   57u  IPv6 0xba50666e24ae1c42      0t0  TCP [2800:200:f540:1c7f:215b:dde2:fc66:28ed]:49495->[2800:3f0:4003:c08::5e]:http (ESTABLISHED)
+firefox   1179 macfranz   91u  IPv4 0x7d249002b275d267      0t0  TCP 192.168.0.24:49393->93.243.107.34.bc.googleusercontent.com:https (ESTABLISHED)
+firefox   1179 macfranz  129u  IPv6 0x185d896fd88f2715      0t0  UDP *:60141
+firefox   1179 macfranz  155u  IPv6 0x28b357400f45e5b9      0t0  UDP *:62471
+node      1344 macfranz   20u  IPv6 0x8df17931cffb5279      0t0  TCP *:hbci (LISTEN)
