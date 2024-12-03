@@ -6,13 +6,15 @@ import userRoutes from "./routes/userRoutes"; // Rutas de usuarios
 import authRoutes from "./routes/authRoutes"; // Rutas de autenticación
 import bienRoutes from "./routes/bienRoutes"; // Rutas de bienes
 import servicioRoutes from "./routes/servicioRoutes"; // Rutas de servicios
+import cookieParser from "cookie-parser"; // Importar cookie-parser
 
 const app = express();
 
-// Configuración de CORS para permitir solo solicitudes desde un dominio específico
+// Configuración de CORS para permitir cookies y credenciales
 const corsOptions = {
-  origin: "http://localhost:3002", // Reemplaza con el dominio de tu página web
-  optionsSuccessStatus: 200, // Para asegurar compatibilidad con algunos navegadores antiguos
+  origin: "http://localhost:3000", // Dominio del frontend
+  credentials: true, // Permitir el envío de cookies y credenciales
+  optionsSuccessStatus: 200, // Asegura compatibilidad con navegadores antiguos
 };
 
 // Aplicar CORS globalmente a todas las rutas
@@ -20,6 +22,8 @@ app.use(cors(corsOptions));
 
 // Middleware para parsear JSON
 app.use(express.json());
+//Midleware para manejar cookies
+app.use(cookieParser()); 
 
 // Usar las rutas
 app.use("/api/roles", roleRoutes);

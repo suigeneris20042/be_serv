@@ -1,11 +1,13 @@
-import { Router } from 'express';
-import { login,register } from '../controllers/authControllers';
+import express from "express";
+import { login, register, logout, checkAuth } from "../controllers/authControllers";
 
-const router = Router();
+const router = express.Router();
 
-router.post('/login', login);
-
-// Ruta para el registro
-router.post('/register', register); 
+// Rutas de autenticación
+router.post("/login", login);
+router.post("/register", register);
+router.post("/logout", logout);
+router.get("/check", checkAuth);
 
 export default router;
+

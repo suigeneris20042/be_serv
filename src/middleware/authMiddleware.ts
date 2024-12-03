@@ -6,7 +6,7 @@ dotenv.config();
 
 // Interfaz personalizada extendiendo `Request`
 interface CustomRequest extends Request {
-  user?: any;  // Aquí puedes especificar el tipo de `user` si lo conoces
+  user?: any;  // 
 }
 // Middleware de autenticación
 export const authenticate = (req: CustomRequest, res: Response, next: NextFunction) => {
@@ -18,8 +18,8 @@ export const authenticate = (req: CustomRequest, res: Response, next: NextFuncti
 
   try {
     const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET || 'defaultsecret');
-    req.user = decoded;  // Guardar los datos decodificados en `req.user`
-    next();  // Pasar al siguiente middleware o ruta
+    req.user = decoded;  
+    next();  
   } catch (err) {
     return res.status(401).json({ message: 'Invalid token' });
   }

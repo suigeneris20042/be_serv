@@ -1,9 +1,9 @@
-import { IUser } from './models/userModel';  // Asegúrate de importar tu modelo de usuario o tipo
+import { IUser } from './models/userModel';  // 
 
 declare global {
   namespace Express {
     interface Request {
-      user?: IUser;  // Ajusta el tipo si es necesario
+      user?: IUser;  // 
     }
   }
 }
