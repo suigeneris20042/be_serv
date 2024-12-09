@@ -1,39 +1,79 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+import { Request, Response, NextFunction } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import dotenv from "dotenv";
 
 dotenv.config();
 
 // Interfaz personalizada extendiendo `Request`
 interface CustomRequest extends Request {
-  user?: any;  // 
+  user?: {
+    id: string;
+    roles: string[];
+    [key: string]: any; // Permite agregar más propiedades si es necesario
+  };
 }
+
 // Middleware de autenticación
-export const authenticate = (req: CustomRequest, res: Response, next: NextFunction) => {
-  const token = req.headers['authorization'];
-  
+export const authenticate = (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const authorizationHeader = req.headers["authorization"];
+  if (!authorizationHeader) {
+    return res.status(403).json({ message: "No token provided" });
+  }
+
+  const token = authorizationHeader.split(" ")[1];
   if (!token) {
-    return res.status(403).json({ message: 'No token provided' });
+    return res.status(403).json({ message: "Token format invalid" });
   }
 
   try {
-    const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET || 'defaultsecret');
-    req.user = decoded;  
-    next();  
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "defaultsecret"
+    ) as JwtPayload;
+
+    // Adjuntar el usuario decodificado al objeto `req`
+    req.user = {
+      id: decoded.id,
+      roles: decoded.roles, // Asegurarse de que contiene un array de strings
+      ...decoded,
+    };
+
+    next();
   } catch (err) {
-    return res.status(401).json({ message: 'Invalid token' });
+    console.error("Token verification failed:", err);
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
 
-
-// Ejemplo del middleware de autorización, que usa `req.user`
-export const authorize = (roles: string[]) => {
+// Middleware de autorización basado en roles
+export const authorize = (requiredRoles: string[]) => {
   return (req: CustomRequest, res: Response, next: NextFunction) => {
-    console.log('Roles del usuario:', req.user?.roles);  // Imprime los roles para verificar
-
-    if (!req.user || !roles.some(role => req.user.roles.includes(role))) {
-      return res.status(403).json({ message: 'No tienes permisos para acceder a esta ruta' });
+    // Asegurarse de que `req.user` existe y tiene roles
+    if (!req.user || !req.user.roles) {
+      return res.status(403).json({
+        message: "No tienes permisos para acceder a esta ruta",
+        requiredRoles,
+        userRoles: [],
+      });
     }
+
+    // Verificar si el usuario tiene al menos uno de los roles requeridos
+    const hasRole = req.user.roles.some((role: string) =>
+      requiredRoles.includes(role)
+    );
+
+    if (!hasRole) {
+      return res.status(403).json({
+        message: "No tienes permisos para acceder a esta ruta",
+        requiredRoles,
+        userRoles: req.user.roles,
+      });
+    }
+
     next();
   };
 };

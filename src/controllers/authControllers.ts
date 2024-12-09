@@ -1,4 +1,4 @@
-import jwt , {JwtPayload} from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { Request, Response } from "express";
 import User from "../models/userModel";
@@ -10,45 +10,61 @@ export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    // Buscar usuario en la base de datos
-    const user = await User.findOne({ email });
+    // Buscar usuario en la base de datos con roles poblados
+    const user = await User.findOne({ email }).populate("roles", "roleName");
     if (!user) {
-      return res.status(400).json({ message: "El Usuario o Contraseña es Incorrecta" });
-      console.log("USUARIO ENCONTRADO");
-    }
-    else{
-      console.log("USUARIO ENCONTRADO");
+      return res
+        .status(400)
+        .json({ message: "El Usuario o Contraseña es Incorrecta" });
     }
 
     // Verificar la contraseña
-    const isMatch = await user.comparePassword(password); // Supone que tienes comparePassword implementado en el modelo
+    const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(400).json({ message: "El Usuario o Contraseña es Incorrecta" });
-      console.log("USUARIO NO CORRECTA");
-    }
-    else{
-      console.log("USUARIO CORRECTA");
+      return res
+        .status(400)
+        .json({ message: "El Usuario o Contraseña es Incorrecta" });
     }
 
-    // Generar el token JWT incluyendo roles
+    // Normalizar los roles
+    const roles = Array.isArray(user.roles)
+      ? user.roles.map((role: any) => role.roleName || role)
+      : [];
+
+    if (roles.length === 0) {
+      return res.status(400).json({
+        message: "El usuario no tiene roles asignados.",
+      });
+    }
+
+    // Generar el token JWT
     const token = jwt.sign(
-      { _id: user._id, username: user.username, roles: user.roles }, // Incluir roles en el token
+      { id: user._id, username: user.username, roles },
       process.env.JWT_SECRET || "defaultsecret",
       { expiresIn: "1h" }
     );
 
-    // Establecer la cookie HTTP-Only
+    // Configurar la cookie HTTP-Only con el token
     res.cookie("token", token, {
-      httpOnly: true, // No accesible desde JavaScript
-      secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
-      sameSite: "strict", // Protege contra CSRF
-      path: "/", // Disponible en toda la aplicación
-      maxAge: 60 * 60 * 1000, // 1 hora
+      httpOnly: true, // Solo accesible desde el servidor
+      secure: process.env.NODE_ENV === "production", // Solo HTTPS en producción
+      sameSite: "strict", // Prevención de ataques CSRF
+      maxAge: 60 * 60 * 1000, // Expiración de 1 hora
     });
 
-    res.status(200).json({ message: "Autenticación exitosa" });
+    res.status(200).json({
+      message: "Autenticación exitosa",
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        roles,
+      },
+    });
   } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
+    console.error("Error en el inicio de sesión:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 
@@ -57,41 +73,52 @@ export const register = async (req: Request, res: Response) => {
   const { username, email, password, roles } = req.body;
 
   try {
-    // Verificar si el usuario ya existe por email
+    // Verificar si el usuario ya existe
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "El usuario ya existe" });
     }
 
-    // Crear un nuevo usuario, permitiendo personalizar los roles
+    // Validar y asignar roles
+    const assignedRoles = roles && Array.isArray(roles) ? roles : ["viewer"];
+
+    // Crear nuevo usuario
     const newUser = new User({
       username,
       email,
       password,
-      roles: roles || ["viewer"], // Si no se proporcionan roles, se asigna "viewer" como predeterminado
+      roles: assignedRoles,
     });
 
-    // Guardar el usuario en la base de datos
     await newUser.save();
 
-    // Generar token JWT después del registro
+    // Generar el token JWT
     const token = jwt.sign(
-      { _id: newUser._id, username: newUser.username, roles: newUser.roles },
+      { id: newUser._id, username: newUser.username, roles: assignedRoles },
       process.env.JWT_SECRET || "defaultsecret",
       { expiresIn: "1h" }
     );
 
-    // Establecer la cookie HTTP-Only
+    // Configurar la cookie HTTP-Only con el token
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      path: "/",
-      maxAge: 60 * 60 * 1000, // 1 hora
+      maxAge: 60 * 60 * 1000, // Expiración de 1 hora
     });
 
-    res.status(201).json({ message: "Usuario creado y autenticado exitosamente" });
+    res.status(201).json({
+      message: "Usuario registrado exitosamente",
+      token,
+      user: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+        roles: assignedRoles,
+      },
+    });
   } catch (error) {
+    console.error("Error en el registro:", error);
     res.status(500).json({ message: (error as Error).message });
   }
 };
@@ -110,14 +137,17 @@ export const logout = (req: Request, res: Response) => {
   res.status(200).json({ message: "Sesión cerrada exitosamente" });
 };
 
+// Controlador para verificar autenticación
 export const checkAuth = (req: Request, res: Response) => {
   try {
-    const token = req.cookies.token;
+    const token =
+      req.cookies?.token || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
-      return res
-        .status(401)
-        .json({ authenticated: false, message: "No autorizado: token no encontrado" });
+      return res.status(401).json({
+        authenticated: false,
+        message: "No autorizado: token no encontrado",
+      });
     }
 
     jwt.verify(
@@ -125,13 +155,18 @@ export const checkAuth = (req: Request, res: Response) => {
       process.env.JWT_SECRET || "defaultsecret",
       (err: Error | null, decoded: JwtPayload | string | undefined) => {
         if (err) {
-          return res.status(401).json({ authenticated: false, message: "Token no válido" });
+          return res
+            .status(401)
+            .json({ authenticated: false, message: "Token no válido" });
         }
 
         res.status(200).json({ authenticated: true, user: decoded });
       }
     );
   } catch (error) {
-    res.status(500).json({ authenticated: false, message: "Error interno del servidor" });
+    console.error("Error en la autenticación:", error);
+    res
+      .status(500)
+      .json({ authenticated: false, message: "Error interno del servidor" });
   }
 };
