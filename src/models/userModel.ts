@@ -21,7 +21,20 @@ const userSchema = new Schema<IUser>(
       match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     },
     password: { type: String, required: true },
-    roles: [{ type: String, enum: ["super-admin", "admin", "viewer"] }], // Roles como cadenas
+    roles: [
+      {
+        type: String,
+        enum: [
+          "super_admin",
+          "admin",
+          "viewer",
+          "administrador_bienes",
+          "administrador_servicios",
+          "publisher_bienes",
+          "publisher_servicios",
+        ],
+      },
+    ], // Roles como cadenas
   },
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },

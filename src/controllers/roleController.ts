@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Role from "../models/roleModel";
+import Permission from "../models/permisosModel";
 
 // Obtener todos los roles
 export const getAllRoles = async (req: Request, res: Response) => {
@@ -11,38 +12,60 @@ export const getAllRoles = async (req: Request, res: Response) => {
   }
 };
 
-// Crear un nuevo rol
 export const createRole = async (req: Request, res: Response) => {
-  try {
-    const { roleName, permissions } = req.body;
+  const { roleName, permissions } = req.body;
 
-    // Validar que los campos obligatorios estén presentes
+  try {
+    console.log("Datos recibidos:", req.body);
+
     if (!roleName || !permissions || !Array.isArray(permissions)) {
+      console.error("Validación fallida: roleName o permissions no válidos");
       return res.status(400).json({
         message:
           "roleName y permissions son obligatorios, y permissions debe ser un array",
       });
     }
 
-    // Crear y guardar el rol
-    const newRole = new Role({ roleName, permissions });
-    await newRole.save();
+    // Verifica que los permisos existan en la base de datos
+    const validPermissions = await Permission.find({
+      _id: { $in: permissions },
+    });
 
-    res.status(201).json(newRole);
-  } catch (err) {
-    res.status(400).json({ message: (err as Error).message });
+    console.log("Permisos válidos encontrados:", validPermissions);
+
+    if (validPermissions.length !== permissions.length) {
+      console.error("Uno o más permisos no son válidos");
+      return res
+        .status(400)
+        .json({ message: "Uno o más permisos no son válidos" });
+    }
+
+    const newRole = new Role({
+      roleName,
+      permissions,
+    });
+
+    await newRole.save();
+    console.log("Nuevo rol creado:", newRole);
+
+    res.status(201).json({ message: "Rol creado exitosamente", role: newRole });
+  } catch (error) {
+    console.error("Error al crear el rol:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 
 // Obtener un rol por ID
 export const getRoleById = async (req: Request, res: Response) => {
   try {
-    const role = await Role.findById(req.params.id).populate("permissions"); // Incluye permisos en la respuesta
-    if (!role) return res.status(404).json({ message: "Rol no encontrado" });
-
+    const role = await Role.findById(req.params.id).populate("permissions");
+    if (!role) {
+      return res.status(404).json({ message: "Rol no encontrado" });
+    }
     res.json(role);
-  } catch (err) {
-    res.status(500).json({ message: (err as Error).message });
+  } catch (error) {
+    console.error("Error al obtener el rol:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 
