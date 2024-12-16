@@ -63,6 +63,7 @@ export const createServicio = async (req: Request, res: Response) => {
     enlace,
     publicado,
     publicador,
+    editable,
   } = req.body;
 
   // Validaciones de datos requeridos
@@ -83,6 +84,7 @@ export const createServicio = async (req: Request, res: Response) => {
       enlace,
       publicado,
       publicador,
+      editable,
     });
     await newServicio.save();
     res.status(201).json({

@@ -14,22 +14,33 @@ interface CustomRequest extends Request {
 }
 
 // Middleware de autenticación
+// Interfaz personalizada extendiendo `Request`
+interface CustomRequest extends Request {
+  user?: {
+    id: string;
+    roles: string[];
+    [key: string]: any; // Permite agregar más propiedades si es necesario
+  };
+}
+
+// Middleware de autenticación
 export const authenticate = (
   req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
+  // Leer el token del encabezado o de las cookies
   const authorizationHeader = req.headers["authorization"];
-  if (!authorizationHeader) {
+  const tokenFromHeader = authorizationHeader?.split(" ")[1]; // Bearer Token
+  const tokenFromCookie = req.cookies?.token; // Cookie Token
+
+  const token = tokenFromHeader || tokenFromCookie; // Usar cualquiera que esté disponible
+  if (!token) {
     return res.status(403).json({ message: "No token provided" });
   }
 
-  const token = authorizationHeader.split(" ")[1];
-  if (!token) {
-    return res.status(403).json({ message: "Token format invalid" });
-  }
-
   try {
+    // Verificar el token JWT
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET || "defaultsecret"
@@ -38,7 +49,7 @@ export const authenticate = (
     // Adjuntar el usuario decodificado al objeto `req`
     req.user = {
       id: decoded.id,
-      roles: decoded.roles, // Asegurarse de que contiene un array de strings
+      roles: decoded.roles, // Asegúrate de que contiene un array de strings
       ...decoded,
     };
 
