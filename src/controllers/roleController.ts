@@ -16,7 +16,7 @@ export const createRole = async (req: Request, res: Response) => {
   const { roleName, permissions } = req.body;
 
   try {
-    console.log("Datos recibidos:", req.body);
+   // console.log("Datos recibidos:", req.body);
 
     if (!roleName || !permissions || !Array.isArray(permissions)) {
       console.error("Validación fallida: roleName o permissions no válidos");
@@ -31,7 +31,7 @@ export const createRole = async (req: Request, res: Response) => {
       _id: { $in: permissions },
     });
 
-    console.log("Permisos válidos encontrados:", validPermissions);
+    //console.log("Permisos válidos encontrados:", validPermissions);
 
     if (validPermissions.length !== permissions.length) {
       console.error("Uno o más permisos no son válidos");
@@ -46,7 +46,7 @@ export const createRole = async (req: Request, res: Response) => {
     });
 
     await newRole.save();
-    console.log("Nuevo rol creado:", newRole);
+   // console.log("Nuevo rol creado:", newRole);
 
     res.status(201).json({ message: "Rol creado exitosamente", role: newRole });
   } catch (error) {

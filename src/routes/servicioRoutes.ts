@@ -7,6 +7,7 @@ import {
   getServicioById,
   updateServicio,
   deleteServicio,
+  getServiciosPorPublicador,
 } from "../controllers/servicioControllers";
 import { authenticate, authorize } from "../middleware/authMiddleware";
 import { get } from "http";
@@ -17,6 +18,7 @@ const router = Router();
 // Rutas públicas
 router.get("/", validateFields, getAllServicios);
 router.get("/anios/:anio", getServiciosPorAnio);
+router.get("/publicador/:publicador",authenticate,authorize(["super_admin", "administrador_servicios", "publisher_servicios"]), getServiciosPorPublicador);
 router.get("/anios", getAniosServicios);
 
 // Rutas protegidas

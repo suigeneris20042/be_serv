@@ -159,6 +159,46 @@ export const getBienById = async (req: Request, res: Response) => {
   }
 };
 
+// Obtener publicaciones según Publicador
+export const getBienesPorPublicador = async (req: Request, res: Response) => {
+  const { publicador } = req.params;
+
+  // Muestra el valor del publicador en los logs
+  //console.log("publicador es:", publicador);
+
+  // Validación del parámetro
+  if (!publicador || typeof publicador !== "string" || publicador.trim() === "") {
+    return res.status(400).json({
+      success: false,
+      message: "El parámetro 'publicador' es requerido y debe ser texto.",
+    });
+  }
+
+  try {
+    // Realiza la consulta en MongoDB
+    const bienes = await Bien.find({ publicador: publicador.trim() });
+
+    if (bienes.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+        message: `No se encontraron bienes para el publicador: ${publicador}`,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: bienes,
+    });
+  } catch (err) {
+    console.error("Error al obtener los bienes por publicador:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Error interno del servidor al obtener los bienes.",
+    });
+  }
+};
+
 export const updateBien = async (req: Request, res: Response) => {
   const { id } = req.params;
 

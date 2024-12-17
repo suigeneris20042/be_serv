@@ -7,6 +7,7 @@ import {
   deleteBien,
   getAniosBienes,
   getBienesPorAnio,
+  getBienesPorPublicador
 } from "../controllers/bienController";
 import { authenticate, authorize } from "../middleware/authMiddleware";
 
@@ -15,6 +16,7 @@ const router = Router();
 // Rutas públicas
 router.get("/", getAllBienes);
 router.get("/anios/:anio", getBienesPorAnio);
+router.get("/publicador/:publicador",authenticate,authorize(["super_admin", "administrador_bienes", "publisher_bienes"]), getBienesPorPublicador);
 router.get("/anios", getAniosBienes);
 
 // Rutas protegidas

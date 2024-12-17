@@ -41,6 +41,46 @@ export const getServiciosPorAnio = async (req: Request, res: Response) => {
     handleError(res, err, "Error al obtener los servicios por año.");
   }
 };
+// Obtener publicaciones según publicador
+export const getServiciosPorPublicador = async (req: Request, res: Response) => {
+  const { publicador } = req.params;
+
+  // Muestra el valor del publicador en los logs
+  //console.log("publicador es:", publicador);
+
+  // Validación del parámetro
+  if (!publicador || typeof publicador !== "string" || publicador.trim() === "") {
+    return res.status(400).json({
+      success: false,
+      message: "El parámetro 'publicador' es requerido y debe ser texto.",
+    });
+  }
+
+  try {
+    // Realiza la consulta en MongoDB
+    const servicios = await Servicio.find({ publicador: publicador.trim() });
+
+    if (servicios.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+        message: `No se encontraron servicios para el publicador: ${publicador}`,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: servicios,
+    });
+  } catch (err) {
+    console.error("Error al obtener los servicios por publicador:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Error interno del servidor al obtener los servicios.",
+    });
+  }
+};
+
 
 // Obtener todos los servicios
 export const getAllServicios = async (req: Request, res: Response) => {
@@ -116,10 +156,13 @@ export const getServicioById = async (req: Request, res: Response) => {
 // Actualizar un servicio por ID
 export const updateServicio = async (req: Request, res: Response) => {
   const { id } = req.params;
+  
   try {
     const servicio = await Servicio.findByIdAndUpdate(id, req.body, {
       new: true,
     });
+
+    console.log("servicio",servicio)
     if (!servicio) {
       return res
         .status(404)
