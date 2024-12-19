@@ -2,6 +2,17 @@ import { Request, Response } from "express";
 import mongoose from "mongoose";
 import Bien from "../models/bienModel";
 
+
+
+const handleError = (res: Response, error: unknown, customMessage?: string) => {
+  console.error(customMessage || "Error:", error);
+  res.status(500).json({
+    success: false,
+    message: customMessage || "Error interno del servidor",
+    error: error instanceof Error ? error.message : "Error desconocido",
+  });
+};
+
 export const getAniosBienes = async (req: Request, res: Response) => {
   try {
     // Obtener años únicos del campo `anio` y ordenarlos de mayor a menor
@@ -23,30 +34,25 @@ export const getAniosBienes = async (req: Request, res: Response) => {
   }
 };
 
+
+
+// Obtener servicios por año
 export const getBienesPorAnio = async (req: Request, res: Response) => {
   const { anio } = req.params;
+  if (!anio || isNaN(parseInt(anio))) {
+    return res.status(400).json({
+      success: false,
+      message: "El parámetro 'anio' es requerido y debe ser numérico.",
+    });
+  }
 
   try {
-    if (!anio) {
-      return res.status(400).json({
-        success: false,
-        message: "El año es requerido",
-      });
-    }
+    // Ordenar los servicios de forma ascendente por `fech_publi`
+    const bienes = await Bien.find({ anio }).sort({ fech_publi: -1 });
 
-    const bienes = await Bien.find({ anio });
-    res.status(200).json({
-      success: true,
-      data: bienes,
-      message: "Bienes obtenidos exitosamente por año",
-    });
+    res.json({ success: true, data: bienes });
   } catch (err) {
-    console.error("Error al obtener bienes por año:", err);
-    res.status(500).json({
-      success: false,
-      message: "Error al obtener bienes por año",
-      error: err instanceof Error ? err.message : "Error desconocido",
-    });
+    handleError(res, err, "Error al obtener los servicios por año.");
   }
 };
 

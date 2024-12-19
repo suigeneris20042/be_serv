@@ -35,12 +35,15 @@ export const getServiciosPorAnio = async (req: Request, res: Response) => {
   }
 
   try {
-    const servicios = await Servicio.find({ anio });
+    // Ordenar los servicios de forma ascendente por `fech_publi`
+    const servicios = await Servicio.find({ anio }).sort({ fech_publi: -1 });
+
     res.json({ success: true, data: servicios });
   } catch (err) {
     handleError(res, err, "Error al obtener los servicios por año.");
   }
 };
+
 // Obtener publicaciones según publicador
 export const getServiciosPorPublicador = async (req: Request, res: Response) => {
   const { publicador } = req.params;

@@ -2,6 +2,9 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { Request, Response } from "express";
 import User from "../models/userModel";
+import Role from "../models/roleModel"; // Asegúrate de importar el modelo de roles correctamente
+import Permission from "../models/permisosModel"; // Asegúrate de importar el modelo de permisos correctamente
+
 
 dotenv.config();
 
@@ -138,7 +141,7 @@ export const logout = (req: Request, res: Response) => {
 };
 
 // Controlador para verificar autenticación
-export const checkAuth = (req: Request, res: Response) => {
+/*export const checkAuth = (req: Request, res: Response) => {
   try {
     const token =
       req.cookies?.token || req.headers.authorization?.split(" ")[1];
@@ -168,5 +171,72 @@ export const checkAuth = (req: Request, res: Response) => {
     res
       .status(500)
       .json({ authenticated: false, message: "Error interno del servidor" });
+  }
+};*/
+export const checkAuth = async (req: Request, res: Response) => {
+  try {
+    const token =
+      req.cookies?.token || req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({
+        authenticated: false,
+        message: "No autorizado: token no encontrado",
+      });
+    }
+
+    jwt.verify(
+      token,
+      process.env.JWT_SECRET || "defaultsecret",
+      async (err: Error | null, decoded: JwtPayload | string | undefined) => {
+        if (err) {
+          return res
+            .status(401)
+            .json({ authenticated: false, message: "Token no válido" });
+        }
+
+        // Extraer los roles del token
+        const roles = (decoded as JwtPayload)?.roles || [];
+        if (!roles.length) {
+          return res.status(403).json({
+            authenticated: false,
+            message: "No tienes roles asignados.",
+          });
+        }
+
+        try {
+          // Buscar los permisos asociados a los roles
+          const userRoles = await Role.find({ roleName: { $in: roles } }).populate("permissions");
+
+          // Construir la respuesta con roles y permisos
+          const rolesWithPermissions = userRoles.map((role) => ({
+            roleName: role.roleName,
+            permissions: role.permissions.map((perm: any) => perm.name),
+          }));
+
+          res.status(200).json({
+            authenticated: true,
+            user: {
+              id: (decoded as JwtPayload)?.id,
+              username: (decoded as JwtPayload)?.username,
+              roles: rolesWithPermissions, // Agregar permisos dentro de roles
+            },
+          });
+        } catch (error) {
+          console.error("Error al obtener permisos:", error);
+          res.status(500).json({
+            authenticated: true,
+            user: decoded,
+            message: "Error al obtener roles y permisos.",
+          });
+        }
+      }
+    );
+  } catch (error) {
+    console.error("Error en la autenticación:", error);
+    res.status(500).json({
+      authenticated: false,
+      message: "Error interno del servidor",
+    });
   }
 };
